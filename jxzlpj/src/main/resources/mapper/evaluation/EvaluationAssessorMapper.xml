@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mycode.jiaoxuepingjia.xspj.mapper.EvaluationAssessorMapper">
+    <select id="getPage" resultType="com.mycode.jiaoxuepingjia.xspj.domain.EvaluationAssessor">
+        select * from BASE_EVALUATION_ASSESSOR where 1 = 1 
+            <if test="studentCode != null and studentCode != ''">
+                and studentCode = #{studentCode}
+            </if>
+    </select>
+    <insert id="insert">
+        insert into BASE_EVALUATION_ASSESSOR (CODE,STUDENT_CODE,STUDENT_NAME,COURSE_CODE,COURSE_NAME,ALLOCATION_CODE,ALLOCATION_NAME,CREATE_DATE,LAST_MODIFY_DATE)
+        values (#{code},#{studentCode},#{studentName},#{courseCode},#{courseName},#{allocationCode},#{allocationName},SYSDATE,SYSDATE)
+    </insert>
+    <update id="update">
+        update BASE_EVALUATION_ASSESSOR
+        <set>
+            <if test="studentCode != null and studentCode != ''">
+                STUDENT_CODE = #{studentCode}
+            </if>
+            <if test="studentName != null and studentName != ''">
+                , STUDENT_NAME = #{studentName}
+            </if>
+            <if test="courseCode != null and courseCode != ''">
+                , COURSE_CODE = #{courseCode}
+            </if>
+            <if test="courseName != null and courseName != ''">
+                , COURSE_NAME = #{courseName}
+            </if>
+            <if test="allocationCode != null and allocationCode != ''">
+                , ALLOCATION_CODE = #{allocationCode}
+            </if>
+            <if test="allocationName != null and allocationName != ''">
+                , ALLOCATION_NAME = #{allocationName}
+            </if>
+        </set>
+        where code = #{code}
+    </update>
+</mapper>

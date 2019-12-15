@@ -1,28 +1,108 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.mycode.jiaoxuepingjia.xspj.mapper.XspjMapper">
-
-    <select id="getXspjSetList" resultType="com.mycode.jiaoxuepingjia.xspj.domain.XspjSet">
-        select s.*,t.name as "templateName"
-        from JXPJ_XSPJ_SET s LEFT JOIN JXPJ_XSPJ_TEMPLATE t on t.code = s.TEMPLATE_CODE
+    <select id="getXspjSetPage" resultType="com.mycode.jiaoxuepingjia.xspj.domain.XspjSet">
+        select * from JXPJ_PJSET where 1 = 1 
+            <if test="name != null and name != ''">
+                and name like '%'||#{name}||'%'
+            </if>
+    </select>
+    <insert id="insertSet">
+        insert into JXPJ_PJSET (CODE,NAME,START_DATE,END_DATE,TEMPLATE_CODE,TEMPLATE_NAME,CREATE_DATE,LAST_MODIFY_DATE,REMARK)
+        values (#{code},#{name},#{startDate},#{endDate},#{templateCode},#{templateName},SYSDATE,SYSDATE,#{remark})
+    </insert>
+    <update id="updateSet">
+        update JXPJ_PJSET
+        <set>
+            <if test="name != null and name != ''">
+                NAME = #{name}
+            </if>
+            <if test="startDate != null">
+                , START_DATE = #{startDate}
+            </if>
+            <if test="endDate != null">
+                , END_DATE = #{endDate}
+            </if>
+            <if test="templateCode != null and templateCode != ''">
+                , TEMPLATE_CODE = #{templateCode}
+            </if>
+            <if test="templateName != null and templateName != ''">
+                , TEMPLATE_NAME = #{templateName}
+            </if>
+            <if test="remark != null and remark != ''">
+                , REMARK = #{remark}
+            </if>
+        </set>
+        where code = #{code}
+    </update>
+    <insert id="insertTemplate">
+        insert into JXPJ_PJSET_TEMPLATE (CODE,NAME)
+        values (#{code},#{name})
+    </insert>
+    <update id="updateTemplate">
+        update JXPJ_PJSET_TEMPLATE
+        <set>
+            <if test="name != null and name != ''">
+                NAME = #{name}
+            </if>
+        </set>
+        where code = #{code}
+    </update>
+    <insert id="insertTarget">
+        insert into JXPJ_PJSET_TARGET (CODE,NAME,CONTENT,TYPE,SCORE,IDX)
+        values (#{code},#{name},#{content},#{type},#{score},#{idx})
+    </insert>
+    <update id="updateTarget">
+        update JXPJ_PJSET_TARGET
+        <set>
+            <if test="name != null and name != ''">
+                NAME = #{name}
+            </if>
+            <if test="content != null and content != ''">
+                ,CONTENT = #{content}
+            </if>
+            <if test="type != null and type != ''">
+                ,TYPE = #{type}
+            </if>
+            <if test="score != null">
+                ,SCORE = #{score}
+            </if>
+            <if test="idx != null">
+                ,IDX = #{idx}
+            </if>
+        </set>
+        where code = #{code}
+    </update>
+    <select id="getXspjTemplatePage" resultType="com.mycode.jiaoxuepingjia.xspj.domain.Template">
+        select * from JXPJ_PJSET_TEMPLATE
     </select>
 
-    <select id="getXspjTemplateList" resultType="map">
-        select * from JXPJ_XSPJ_TEMPLATE
+    <select id="getXspjTemplateList" resultType="com.mycode.jiaoxuepingjia.xspj.domain.Template">
+        select * from JXPJ_PJSET_TEMPLATE
+    </select>
+    <select id="getXspjTargetPage" resultType="com.mycode.jiaoxuepingjia.xspj.domain.Target">
+        select * from JXPJ_PJSET_TARGET
     </select>
 
     <select id="getXspjTargetList" resultType="com.mycode.jiaoxuepingjia.xspj.domain.Target">
-        select * from JXPJ_XSPJ_TARGET
+        select * from JXPJ_PJSET_TARGET
     </select>
     <select id="getXspjTargetListByTemplateCode" resultType="com.mycode.jiaoxuepingjia.xspj.domain.Target">
         SELECT TT.IDX,T.*
-        FROM JXPJ_XSPJ_TEMPLATE_TARGET TT LEFT JOIN JXPJ_XSPJ_TARGET T ON TT.TARGET_CODE = T.CODE
-        WHERE TT.TEMPLATE_CODE = (SELECT TEMPLATE_CODE FROM JXPJ_XSPJ_SET where end_date > SYSDATE)
+        FROM JXPJ_PJSET_TEMPLATE_TARGET TT LEFT JOIN JXPJ_PJSET_TARGET T ON TT.TARGET_CODE = T.CODE
+        WHERE TT.TEMPLATE_CODE = (SELECT TEMPLATE_CODE FROM JXPJ_PJSET where end_date > SYSDATE)
     </select>
 
-    <select id="getXspjCourseList" resultType="com.mycode.jiaoxuepingjia.xspj.domain.Course">
+    <select id="getXspjCoursePage" resultType="com.mycode.jiaoxuepingjia.xspj.domain.Course">
         SELECT c.*
         from DATA_STUDENT_COURSE sc LEFT JOIN DATA_COURSE c on c.CODE = SC.COURSE_CODE
         where STUDENT_CODE = #{userId}
+    </select>
+
+    <select id="getCoursePage" resultType="com.mycode.jiaoxuepingjia.xspj.domain.Course">
+        SELECT * from  DATA_COURSE where 1=1 
+            <if test="nameZh != null and nameZh != ''">
+                and nameZh like '%'||#{nameZh}||'%'
+            </if>
     </select>
 </mapper>

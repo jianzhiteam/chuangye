@@ -12,7 +12,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Target {
+public class Template {
 
     //分页参数
     @JsonIgnore
@@ -22,5 +22,5 @@ public class Target {
     private String code,name
             ,content
             ,type;
-    private Integer score,idx=0;
+    private Integer score,idx;
 }

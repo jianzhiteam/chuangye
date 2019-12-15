@@ -5,7 +5,6 @@ import com.mycode.system.user.domain.User;
 import com.mycode.system.user.service.UserService;
 import com.mycode.util.JsonResult;
 import com.mycode.util.RedisUtil;
-import com.wf.captcha.Captcha;
 import com.wf.captcha.SpecCaptcha;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

@@ -5,8 +5,8 @@ import com.mycode.system.user.domain.User;
 import com.mycode.system.user.service.UserService;
 import com.mycode.util.JsonResult;
 import com.mycode.util.RedisUtil;
-import com.wf.captcha.Captcha;
 import com.wf.captcha.SpecCaptcha;
+import com.wf.captcha.base.Captcha;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -34,31 +34,51 @@ public class AccountController {
     private UserService userService;
     @Autowired
     private RedisUtil redisUtil;
-
     /**
      * 获取图形验证码
+     * @param len 返回的图形验证码长度，默认4位数
      * @return
      * @throws Exception
      */
     @ResponseBody
     @RequestMapping("/getCaptcha.do")
-    public JsonResult<Object> getCaptcha() throws Exception {
-        SpecCaptcha specCaptcha = new SpecCaptcha();
+    public JsonResult<Object> getCaptcha(@RequestParam(value = "len",required = false,defaultValue = "4") Integer len) {
+        //初始化组件
+        SpecCaptcha specCaptcha = new SpecCaptcha(130, 48, len);
         specCaptcha.setCharType(Captcha.TYPE_ONLY_NUMBER);
-        String code = specCaptcha.text();
-        File file = new File("/jxzlpj/captcha/"+code+".jpg");
-        boolean bool = specCaptcha.out(new FileOutputStream(file));
-        if(!bool){
-            return JsonResult.error();
-        }
+        //存储到redis，有效时间为3分钟
         String token = UUID.randomUUID().toString().replaceAll("-", "");
-        redisUtil.set(token,code,180);
+        redisUtil.set(token,specCaptcha.text(),180);
         //封装结果集
-        Map<String,Object> map = new HashMap<>();
-        map.put("token",token);
-        map.put("imgPath","captcha/"+code+".jpg");
-        return JsonResult.success(map);
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put("token",token);
+        resultMap.put("image",specCaptcha.toBase64());
+        return JsonResult.success(resultMap);
     }
+//    /**
+//     * 获取图形验证码
+//     * @return
+//     * @throws Exception
+//     */
+//    @ResponseBody
+//    @RequestMapping("/getCaptcha.do")
+//    public JsonResult<Object> getCaptcha() throws Exception {
+//        SpecCaptcha specCaptcha = new SpecCaptcha();
+//        specCaptcha.setCharType(Captcha.TYPE_ONLY_NUMBER);
+//        String code = specCaptcha.text();
+//        File file = new File("/jxzlpj/captcha/"+code+".jpg");
+//        boolean bool = specCaptcha.out(new FileOutputStream(file));
+//        if(!bool){
+//            return JsonResult.error();
+//        }
+//        String token = UUID.randomUUID().toString().replaceAll("-", "");
+//        redisUtil.set(token,code,180);
+//        //封装结果集
+//        Map<String,Object> map = new HashMap<>();
+//        map.put("token",token);
+//        map.put("imgPath","captcha/"+code+".jpg");
+//        return JsonResult.success(map);
+//    }
 
     @ResponseBody
     @RequestMapping("/login.do")
